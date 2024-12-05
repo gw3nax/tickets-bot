@@ -1,0 +1,54 @@
+spring:
+  application:
+    name: TicketTrackerBot
+  jackson:
+    time-zone: UTC
+  datasource:
+    url: jdbc:postgresql://localhost:5435/botDb
+    username: postgres
+    password: password
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+      format_sql: true
+    show-sql: true
+  liquibase:
+    change-log: migrations/db.changelog-master.yml
+  kafka:
+    consumer:
+      properties:
+        spring.json.trusted.packages: "ru.gw3nax.tickettrackerwebsite.dto.response,java.util,java.lang,*"
+
+app:
+  telegram-token: ${TELEGRAM-TOKEN}
+  topic-name: bot
+
+logging:
+  level:
+    org.apache.kafka: OFF
+    org.springframework.kafka: OFF
+
+kafka-producer:
+  acks: all
+  batch-size: 1048576
+  max-request-size: 1048576
+  linger-ms: 5000
+  bootstrap-server:  127.0.0.1:9092
+  topic-prop:
+    name: queries
+    partitions: 1
+    replicas: 1
+
+kafka-consumer:
+  bootstrap-server: 127.0.0.1:9092
+  enable-auto-commit: false
+  fetch-max-byte: 1048576
+  max-poll-records: 5
+  max-poll-interval: 5
+  group-id: listen
+  isolation-level: read_committed
+  topic-prop:
+    name: bot
+    partitions: 1
+    replicas: 1
