@@ -22,7 +22,7 @@ spring:
 
 app:
   telegram-token: ${TELEGRAM-TOKEN}
-  topic-name: bot
+  topic-name: telegram-bot-1-responses
 
 logging:
   level:

@@ -47,31 +47,18 @@ public class MessageCallbackQueryHandler {
     }
 
     private InlineKeyboardInfo getData(CallbackQuery callbackQuery) {
-        // Получаем информацию о запросах пользователя
-        var keyboardInfo = flightRequestService.getAllRequestsByUserId(callbackQuery.from().id().toString());
-
-        // Извлекаем номер страницы из callbackData
+        var keyboardInfo = flightRequestService.getAllRequestsByUserId(callbackQuery.from().id());
         var pageNumber = CallbackQueryParser.getArrowPageNumber(callbackQuery.data());
-
-        // Проверка, что pageNumber валидно
         if (pageNumber < 1 || pageNumber > keyboardInfo.totalPageNumber()) {
-            // Если номер страницы вне допустимого диапазона, возвращаем первую страницу
             pageNumber = 1;
         }
-
-        // Устанавливаем размер страницы
         int pageSize = 3;
-        // Расчитываем индексы для subList
         int startIndex = (pageNumber - 1) * pageSize;
         int endIndex = Math.min(startIndex + pageSize, keyboardInfo.inlineKeyboardButtonInfoList().size());
-
-        // Проверка, что индексы не выходят за пределы списка
         if (startIndex >= keyboardInfo.inlineKeyboardButtonInfoList().size()) {
             startIndex = 0;
             endIndex = Math.min(pageSize, keyboardInfo.inlineKeyboardButtonInfoList().size());
         }
-
-        // Извлекаем элементы для текущей страницы
         List<InlineKeyboardButtonInfo> pageItems = keyboardInfo.inlineKeyboardButtonInfoList().subList(startIndex, endIndex);
 
         return new InlineKeyboardInfo(keyboardInfo.totalPageNumber(), pageItems);
@@ -79,12 +66,12 @@ public class MessageCallbackQueryHandler {
 
 
     private SendMessage handleDelete(CallbackQuery callbackQuery) {
-        //TODO remove
         var userId = callbackQuery.from().id();
         try {
             flightRequestService.removeFlightRequest(CallbackQueryParser.getRequestId(callbackQuery.data()));
-            return new SendMessage(userId, "12345678");
+            return new SendMessage(userId, "Ваш запрос удален");
         } catch (Exception e) {
+            log.error("ERROR: " + e.getMessage());
             return new SendMessage(userId, "Something went wrong. Please try again later");
         }
     }

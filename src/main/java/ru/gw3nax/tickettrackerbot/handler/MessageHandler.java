@@ -29,6 +29,7 @@ public class MessageHandler {
         try {
             return inputDataStateHandler.handleState(update);
         } catch (Exception e) {
+            log.error("ERROR: " + e.getMessage());
             return new SendMessage(update.message().from().id(), "Что-то пошло не так.");
         }
     }

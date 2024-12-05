@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.gw3nax.tickettrackerbot.entity.City;
+import ru.gw3nax.tickettrackerbot.model.City;
 
 import java.io.IOException;
 import java.io.InputStream;

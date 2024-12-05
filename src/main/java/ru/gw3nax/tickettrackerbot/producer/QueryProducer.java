@@ -8,15 +8,12 @@ import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
 import ru.gw3nax.tickettrackerbot.configuration.properties.KafkaProducerProperties;
 import ru.gw3nax.tickettrackerbot.dto.request.FlightRequest;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 @RequiredArgsConstructor
 @Component
@@ -26,13 +23,13 @@ public class QueryProducer {
     private final KafkaProducerProperties kafkaProperties;
     private final KafkaTemplate<String, FlightRequest> kafkaTemplate;
 
-    @Value("${app.topic-name}")
-    private String topicName;
+    @Value("${spring.application.name}")
+    private String clientName;
 
-    public void sendUpdate(FlightRequest flightRequest) throws InterruptedException, ExecutionException {
+    public void sendUpdate(FlightRequest flightRequest) {
         log.info(flightRequest.getAction().toString());
         List<Header> headers = List.of(
-                new RecordHeader("client-name", topicName.getBytes(StandardCharsets.UTF_8)),
+                new RecordHeader("client-name", clientName.getBytes(StandardCharsets.UTF_8)),
                 new RecordHeader("action", flightRequest.getAction().toString().getBytes(StandardCharsets.UTF_8)),
                 new RecordHeader("priority", "high".getBytes(StandardCharsets.UTF_8))
         );
@@ -46,13 +43,6 @@ public class QueryProducer {
                 headers
         );
 
-        CompletableFuture<SendResult<String, FlightRequest>> future = kafkaTemplate.send(record);
-        SendResult<String, FlightRequest> result = future.get();
-
-        if (result != null) {
-            log.info("Message sent successfully: {}", flightRequest);
-        } else {
-            log.error("Failed to send message: {}", flightRequest);
-        }
+        kafkaTemplate.send(record);
     }
 }

@@ -18,16 +18,17 @@ public class FlightRequestEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "user_id")
-    private String userId;
-    @Column(name = "from_place")
+    @ManyToOne(cascade = CascadeType.REMOVE)
+    private User user;
+    @Column(name = "from_place", nullable = false)
     private String fromPlace;
-    @Column(name = "to_place")
+    @Column(name = "to_place", nullable = false)
     private String toPlace;
-    @Column(name = "fromDate")
+    @Column(name = "from_date", nullable = false)
     private LocalDate fromDate;
-    @Column(name = "toDate")
+    @Column(name = "to_date")
     private LocalDate toDate;
+    @Column(nullable = false)
     private String currency;
     private BigDecimal price;
 }

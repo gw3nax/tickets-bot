@@ -9,5 +9,5 @@ import java.util.List;
 @Repository
 public interface FlightRequestRepository extends JpaRepository<FlightRequestEntity, Long> {
 
-    List<FlightRequestEntity> findByUserId(String userId);
+    List<FlightRequestEntity> findByUserId(Long userId);
 }

@@ -29,7 +29,7 @@ public class ShowQueriesCommand implements Command {
     @Override
     public SendMessage handle(Update update) {
         var userId = update.message().from().id();
-        var requests = flightRequestService.findAllRequestsByUserId(String.valueOf(userId));
+        var requests = flightRequestService.findAllRequestsByUserId(userId);
         var builder = new StringBuilder();
         var counter = 1;
         if (requests.isEmpty()) {

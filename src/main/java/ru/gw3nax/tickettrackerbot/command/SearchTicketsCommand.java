@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.gw3nax.tickettrackerbot.enums.InputDataState;
+import ru.gw3nax.tickettrackerbot.service.UserService;
 
 import java.util.Map;
 
@@ -17,7 +18,7 @@ public class SearchTicketsCommand implements Command {
     private static final String DESCRIPTION = "Команда для поиска авиабилетов";
     private static final String COMMAND = "/search";
 
-    private final Map<Long, InputDataState> stateMap;
+    private final UserService userService;
 
     @Override
     public String command() {
@@ -32,7 +33,7 @@ public class SearchTicketsCommand implements Command {
     @Override
     public SendMessage handle(Update update) {
         Long userId = update.message().from().id();
-        stateMap.put(userId, InputDataState.SOURCE);
+        userService.updateState(userId, InputDataState.SOURCE);
         return new SendMessage(userId, "Выберите пункт отправления.");
     }
 }
