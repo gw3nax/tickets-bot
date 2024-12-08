@@ -26,15 +26,6 @@ public class KafkaProducerConfig {
     private final KafkaProducerProperties kafkaProperties;
 
     @Bean
-    public NewTopic newTopic() {
-        return TopicBuilder
-                .name(kafkaProperties.topicProp().name())
-                .partitions(kafkaProperties.topicProp().partitions())
-                .replicas(kafkaProperties.topicProp().replicas())
-                .build();
-    }
-
-    @Bean
     public DefaultKafkaProducerFactory<String, FlightRequest> kafkaProducerFactory() {
         Map<String, Object> prop = new HashMap<>();
 
@@ -58,6 +49,5 @@ public class KafkaProducerConfig {
     public KafkaTemplate<String, FlightRequest> kafkaTemplate(DefaultKafkaProducerFactory<String, FlightRequest> kafkaProducerFactory) {
         return new KafkaTemplate<>(kafkaProducerFactory);
     }
-
 }
 

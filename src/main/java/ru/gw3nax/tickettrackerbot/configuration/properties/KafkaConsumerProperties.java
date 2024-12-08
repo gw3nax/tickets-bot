@@ -20,6 +20,8 @@ public record KafkaConsumerProperties(
         Boolean enableAutoCommit,
         @NotEmpty
         String isolationLevel,
+        @NotNull
+        Boolean allowAutoCreate,
         @NotEmpty
         String groupId,
         TopicProp topicProp

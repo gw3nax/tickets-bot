@@ -33,7 +33,7 @@ public class InputDataStateHandler {
         var userMessage = update.message().text();
         var currentState = userService.getState(userId);
 
-        FlightRequest.FlightRequestBuilder builder = flightRequestBuilders.computeIfAbsent(userId, k -> FlightRequest.builder());
+        var builder = flightRequestBuilders.computeIfAbsent(userId, k -> FlightRequest.builder());
         builder.userId(String.valueOf(userId));
         switch (currentState) {
             case SOURCE:

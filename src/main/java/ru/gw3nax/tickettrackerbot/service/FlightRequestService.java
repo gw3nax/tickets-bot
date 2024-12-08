@@ -28,14 +28,19 @@ public class FlightRequestService {
         return flightRequestRepository.findByUserId(userId);
     }
 
-    public InlineKeyboardInfo getAllRequestsByUserId(Long userId) {
+    public InlineKeyboardInfo getAllRequestsByUserId(Integer pageNumber, Integer pageSize, Long userId) {
         var requests = flightRequestRepository.findByUserId(userId);
-        return new InlineKeyboardInfo(getTotalPageNumber(requests.size()),
-                requests.stream().map(InlineKeyboardInfo::getButtonInfo).toList());
+        var totalPageNumber = getTotalPageNumber(requests.size(), pageSize);
+        var pageRequests = requests.stream()
+                .skip((long) pageNumber * pageSize)
+                .limit(pageSize)
+                .map(InlineKeyboardInfo::getButtonInfo)
+                .toList();
+        return new InlineKeyboardInfo(totalPageNumber, pageRequests);
     }
 
-    private int getTotalPageNumber(int listSize) {
-        return (listSize + 2) / 3;
+    private int getTotalPageNumber(int listSize, int pageSize) {
+        return (listSize + (pageSize-1)) / pageSize;
     }
 
     public void saveFlightRequest(FlightRequest flightRequest) {

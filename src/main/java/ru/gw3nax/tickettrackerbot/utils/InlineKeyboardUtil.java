@@ -12,7 +12,7 @@ import java.util.List;
 public class InlineKeyboardUtil {
 
     public InlineKeyboardMarkup createKeyboard(List<InlineKeyboardButtonInfo> buttonInfoList, int page, int lastPage) {
-        InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
+        var keyboardMarkup = new InlineKeyboardMarkup();
         buttonInfoList.stream()
                 .map(item -> new InlineKeyboardButton(item.buttonText())
                         .callbackData(String.join("/", item.flightRequestId())))
@@ -21,8 +21,8 @@ public class InlineKeyboardUtil {
     }
 
     private InlineKeyboardButton[] arrowKeyboard(int page, int lastPage) {
-        String rightCallBack = String.join("/", "right", String.valueOf(page + 1));
-        String leftCallBack = String.join("/", "left", String.valueOf(page - 1));
+        var rightCallBack = String.join("/", "right", String.valueOf(page + 1));
+        var leftCallBack = String.join("/", "left", String.valueOf(page - 1));
         if (lastPage - 1 == 0) {
             return new InlineKeyboardButton[]{};
         } else if (page == 0) {
@@ -38,8 +38,8 @@ public class InlineKeyboardUtil {
     }
 
     public EditMessageReplyMarkup updateMessage(Long chatId, Integer messageId, String data, List<InlineKeyboardButtonInfo> buttonInfoList, int lastPage) {
-        EditMessageReplyMarkup editMessageReplyMarkup = new EditMessageReplyMarkup(chatId, messageId);
-        String[] split = data.split("/");
+        var editMessageReplyMarkup = new EditMessageReplyMarkup(chatId, messageId);
+        var split = data.split("/");
         int page = Integer.parseInt(split[1]);
         return editMessageReplyMarkup.replyMarkup(
                 createKeyboard(buttonInfoList, page, lastPage)

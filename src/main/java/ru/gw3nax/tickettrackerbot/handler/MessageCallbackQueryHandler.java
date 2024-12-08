@@ -47,21 +47,8 @@ public class MessageCallbackQueryHandler {
     }
 
     private InlineKeyboardInfo getData(CallbackQuery callbackQuery) {
-        var keyboardInfo = flightRequestService.getAllRequestsByUserId(callbackQuery.from().id());
-        var pageNumber = CallbackQueryParser.getArrowPageNumber(callbackQuery.data());
-        if (pageNumber < 1 || pageNumber > keyboardInfo.totalPageNumber()) {
-            pageNumber = 1;
-        }
-        int pageSize = 3;
-        int startIndex = (pageNumber - 1) * pageSize;
-        int endIndex = Math.min(startIndex + pageSize, keyboardInfo.inlineKeyboardButtonInfoList().size());
-        if (startIndex >= keyboardInfo.inlineKeyboardButtonInfoList().size()) {
-            startIndex = 0;
-            endIndex = Math.min(pageSize, keyboardInfo.inlineKeyboardButtonInfoList().size());
-        }
-        List<InlineKeyboardButtonInfo> pageItems = keyboardInfo.inlineKeyboardButtonInfoList().subList(startIndex, endIndex);
-
-        return new InlineKeyboardInfo(keyboardInfo.totalPageNumber(), pageItems);
+        return flightRequestService.getAllRequestsByUserId(
+                    CallbackQueryParser.getArrowPageNumber(callbackQuery.data()), PAGE_SIZE, callbackQuery.from().id());
     }
 
 

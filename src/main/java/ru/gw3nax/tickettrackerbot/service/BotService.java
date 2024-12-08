@@ -1,7 +1,6 @@
 package ru.gw3nax.tickettrackerbot.service;
 
 import com.pengrad.telegrambot.TelegramBot;
-import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.WebAppInfo;
 import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
@@ -27,9 +26,10 @@ public class BotService {
         for (var data : flightResponse.getData()) {
             builder.append(counter).append(". ")
                     .append(data.getFromPlace()).append(" -> ").append(data.getToPlace()).append("\n")
-                    .append("Дата перелёта: ").append(data.getDepartureAt()).append("\n")
+                    .append("Дата перелёта: ").append(data.getDepartureAt().toLocalDate()).append(" ").append(data.getDepartureAt().toLocalTime()).append("\n")
+                    .append("Авиакомпания: ").append(data.getAirline()).append("\n")
                     .append("Цена: ").append(data.getPrice()).append("\n");
-            keyboard.addRow(new InlineKeyboardButton(data.getFromPlace() + " -> " + data.getToPlace())
+            keyboard.addRow(new InlineKeyboardButton(data.getAirline() + " : " + data.getDepartureAt().toLocalDate() + " " + data.getDepartureAt().toLocalTime())
                     .webApp(new WebAppInfo("https://www.aviasales.ru" + data.getLink())));
             counter++;
         }
