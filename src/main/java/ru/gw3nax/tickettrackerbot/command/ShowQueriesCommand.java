@@ -43,6 +43,6 @@ public class ShowQueriesCommand implements Command {
             counter++;
         }
 
-        return new SendMessage(update.message().chat().id(), builder.toString());
+        return new SendMessage(userId, builder.toString());
     }
 }

@@ -1,0 +1,12 @@
+[
+  {
+    "name_translations": {"en": "Fuzuli"},
+    "cases": {"da": "Физули", "pr": "Физули", "ro": "Физули", "su": "Физули", "tv": "Физули", "vi": "в Физули"},
+    "country_code": "AZ",
+    "code": "FZL",
+    "time_zone": "Asia/Baku",
+    "name": "Физули",
+    "coordinates": {"lat": 39.600277, "lon": 47.143055},
+    "has_flightable_airport": true
+  }
+]

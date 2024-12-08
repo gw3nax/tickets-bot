@@ -5,7 +5,6 @@ import com.pengrad.telegrambot.request.SendMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.gw3nax.tickettrackerbot.model.InlineKeyboardInfo;
 import ru.gw3nax.tickettrackerbot.service.FlightRequestService;
 import ru.gw3nax.tickettrackerbot.utils.InlineKeyboardUtil;
 
@@ -31,7 +30,7 @@ public class RemoveQueryCommand implements Command {
     @Override
     public SendMessage handle(Update update) {
         var userId = update.message().from().id();
-        var keyboardInfo = flightRequestService.getAllRequestsByUserId(0,3, userId);
+        var keyboardInfo = flightRequestService.getAllRequestsByUserId(0, 3, userId);
         if (keyboardInfo == null) {
             return new SendMessage(userId, "Вы не ищите ни один билет.\nУдалять нечего.");
         }

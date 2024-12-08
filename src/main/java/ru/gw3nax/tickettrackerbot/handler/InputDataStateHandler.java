@@ -15,6 +15,7 @@ import ru.gw3nax.tickettrackerbot.service.UserService;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.Currency;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -82,6 +83,12 @@ public class InputDataStateHandler {
                 }
 
             case CURRENCY:
+                try {
+                   Currency.getInstance(userMessage);
+                } catch (IllegalArgumentException e) {
+                    return new SendMessage(userId, "Неверный формат валюты. Попробуйте еще раз");
+                }
+
                 builder.currency(userMessage);
                 userService.updateState(userId, InputDataState.PRICE);
                 return new SendMessage(userId, "Введите максимальную цену");

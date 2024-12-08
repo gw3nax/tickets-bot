@@ -42,6 +42,6 @@ public class StartCommand implements Command {
     public SendMessage handle(Update update) {
         log.info("Start command executed");
         userService.registerUser(update.message().from().id());
-        return new SendMessage(update.message().chat().id(), TEXT);
+        return new SendMessage(update.message().from().id(), TEXT);
     }
 }

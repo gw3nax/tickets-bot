@@ -8,8 +8,6 @@ import org.springframework.stereotype.Component;
 import ru.gw3nax.tickettrackerbot.enums.InputDataState;
 import ru.gw3nax.tickettrackerbot.service.UserService;
 
-import java.util.Map;
-
 @Slf4j
 @Component
 @RequiredArgsConstructor

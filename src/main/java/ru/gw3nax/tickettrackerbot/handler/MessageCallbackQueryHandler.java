@@ -7,15 +7,12 @@ import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.response.BaseResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.common.network.Send;
 import org.springframework.stereotype.Component;
-import ru.gw3nax.tickettrackerbot.model.InlineKeyboardButtonInfo;
 import ru.gw3nax.tickettrackerbot.model.InlineKeyboardInfo;
 import ru.gw3nax.tickettrackerbot.service.FlightRequestService;
 import ru.gw3nax.tickettrackerbot.utils.CallbackQueryParser;
 import ru.gw3nax.tickettrackerbot.utils.InlineKeyboardUtil;
 
-import java.util.List;
 import java.util.Objects;
 
 @Component
@@ -25,7 +22,7 @@ public class MessageCallbackQueryHandler {
     private static final Integer PAGE_SIZE = 3;
     private final FlightRequestService flightRequestService;
 
-    public BaseRequest<? extends BaseRequest<?,?>,? extends BaseResponse> handle(CallbackQuery callbackQuery) {
+    public BaseRequest<? extends BaseRequest<?, ?>, ? extends BaseResponse> handle(CallbackQuery callbackQuery) {
         if (callbackQuery.data().contains("left") || callbackQuery.data().contains("right")) {
             EditMessageReplyMarkup result = handleArrow(callbackQuery);
             return Objects.isNull(result) ?
@@ -48,7 +45,7 @@ public class MessageCallbackQueryHandler {
 
     private InlineKeyboardInfo getData(CallbackQuery callbackQuery) {
         return flightRequestService.getAllRequestsByUserId(
-                    CallbackQueryParser.getArrowPageNumber(callbackQuery.data()), PAGE_SIZE, callbackQuery.from().id());
+                CallbackQueryParser.getArrowPageNumber(callbackQuery.data()), PAGE_SIZE, callbackQuery.from().id());
     }
 
 
