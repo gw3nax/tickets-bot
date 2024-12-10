@@ -36,6 +36,9 @@ kafka-producer:
   max-request-size: 1048576
   linger-ms: 5000
   bootstrap-server:  127.0.0.1:9092
+  credential:
+    username: user
+    password: user_secret
   topic-prop:
     name: queries
     partitions: 1
@@ -50,7 +53,12 @@ kafka-consumer:
   allow-auto-create: false
   group-id: listen
   isolation-level: read_committed
+  credential:
+    username: user
+    password: user_secret
   topic-prop:
     name: bot
     partitions: 1
     replicas: 1
+server:
+  port: 8080

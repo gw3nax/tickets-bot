@@ -41,7 +41,6 @@ class InputDataStateHandlerTest {
         when(message.from()).thenReturn(user);
         when(user.id()).thenReturn(userId);
         when(message.text()).thenReturn(messageText);
-
         return update;
     }
 
