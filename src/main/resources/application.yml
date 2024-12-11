@@ -16,18 +16,23 @@ spring:
   liquibase:
     change-log: migrations/db.changelog-master.yml
   kafka:
+    admin:
+      sasl.mechanism: PLAIN
+      security.protocol: SASL_PLAINTEXT
+      sasl.jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="${kafka-consumer.credential.username}" password="${kafka-consumer.credential.password}";
+
     consumer:
       properties:
         spring.json.trusted.packages: "ru.gw3nax.tickettrackerwebsite.dto.response,java.util,java.lang,*"
+        allow-auto-create-topics: false
 
 app:
   telegram-token: ${TELEGRAM-TOKEN}
-  topic-name: bot
 
-logging:
-  level:
-    org.apache.kafka: OFF
-    org.springframework.kafka: OFF
+#logging:
+#  level:
+#    org.apache.kafka: OFF
+#    org.springframework.kafka: OFF
 
 kafka-producer:
   acks: all
@@ -35,6 +40,9 @@ kafka-producer:
   max-request-size: 1048576
   linger-ms: 5000
   bootstrap-server:  127.0.0.1:9092
+  credential:
+    username: admin
+    password: admin-secret
   topic-prop:
     name: queries
     partitions: 1
@@ -48,7 +56,13 @@ kafka-consumer:
   max-poll-interval: 5
   group-id: listen
   isolation-level: read_committed
+  credential:
+    username: admin
+    password: admin-secret
   topic-prop:
-    name: bot
+    name: telegram-bot-1-responses
     partitions: 1
     replicas: 1
+  allow-auto-create: false
+server:
+  port: 8080
