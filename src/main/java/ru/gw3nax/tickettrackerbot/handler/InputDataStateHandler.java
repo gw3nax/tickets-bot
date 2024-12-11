@@ -15,7 +15,6 @@ import ru.gw3nax.tickettrackerbot.service.UserService;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.Currency;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,14 +51,14 @@ public class InputDataStateHandler {
                 }
                 builder.toPlace(toIata);
                 userService.updateState(userId, InputDataState.DEPARTURE_DATE_FROM);
-                return new SendMessage(userId, "Введите дату вылета (yyyy-MM-dd)");
+                return new SendMessage(userId, "Введите начальную дату окна вылета (yyyy-MM-dd)");
 
             case DEPARTURE_DATE_FROM:
                 try {
                     if (LocalDate.parse(userMessage).isAfter(LocalDate.now().minusDays(1))) {
                         builder.fromDate(LocalDate.parse(userMessage));
                         userService.updateState(userId, InputDataState.DEPARTURE_DATE_TO);
-                        return new SendMessage(userId, "Введите дату возвращения (yyyy-MM-dd)");
+                        return new SendMessage(userId, "Введите конечную дату окна вылета (yyyy-MM-dd)");
                     } else {
                         return new SendMessage(userId, "Дата должна быть не ранее сегодняшнего дня.\nПопробуйте еще раз!");
                     }
@@ -72,31 +71,20 @@ public class InputDataStateHandler {
                 try {
                     if (LocalDate.parse(userMessage).isAfter(builder.build().getFromDate().minusDays(1))) {
                         builder.toDate(LocalDate.parse(userMessage));
-                        userService.updateState(userId, InputDataState.CURRENCY);
-                        return new SendMessage(userId, "Введите валюту (например, RUB)");
+                        userService.updateState(userId, InputDataState.PRICE);
+                        return new SendMessage(userId, "Введите максимальную цену (RUB)");
                     } else {
                         return new SendMessage(userId, "Дата должна быть не позднее даты вылета.\nПопробуйте еще раз!");
                     }
                 } catch (DateTimeParseException e) {
                     return new SendMessage(userId, "Неверный формат даты. Попробуйте снова");
                 }
-
-            case CURRENCY:
-                try {
-                   Currency.getInstance(userMessage);
-                } catch (IllegalArgumentException e) {
-                    return new SendMessage(userId, "Неверный формат валюты. Попробуйте еще раз");
-                }
-
-                builder.currency(userMessage);
-                userService.updateState(userId, InputDataState.PRICE);
-                return new SendMessage(userId, "Введите максимальную цену");
-
             case PRICE:
                 try {
                     builder.price(new BigDecimal(userMessage));
                     FlightRequest request = builder.build();
                     request.setAction(Action.POST);
+                    request.setCurrency("RUB");
                     flightRequestService.saveFlightRequest(request);
                     userService.clearState(userId);
                     flightRequestBuilders.remove(userId);

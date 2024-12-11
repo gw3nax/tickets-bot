@@ -43,8 +43,10 @@ public class KafkaConsumerConfig {
         consumerProps.put(ConsumerConfig.PARTITION_ASSIGNMENT_STRATEGY_CONFIG, RoundRobinAssignor.class.getName());
         consumerProps.put("security.protocol", "SASL_PLAINTEXT");
         consumerProps.put("sasl.mechanism", "PLAIN");
-        consumerProps.put("sasl.jaas.config", "org.apache.kafka.common.security.plain.PlainLoginModule required "
-                + "username=\"" + kafkaProperties.credential().username() + "\" password=\"" + kafkaProperties.credential().password()+ "\";");
+        consumerProps.put("sasl.jaas.config", String.format(
+                "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"%s\" password=\"%s\";",
+                kafkaProperties.credential().username().trim(),
+                kafkaProperties.credential().password().trim()));
         return new DefaultKafkaConsumerFactory<>(consumerProps, new StringDeserializer(), deserializer);
     }
 

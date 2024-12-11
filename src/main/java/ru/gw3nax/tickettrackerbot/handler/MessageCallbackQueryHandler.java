@@ -52,7 +52,7 @@ public class MessageCallbackQueryHandler {
     private SendMessage handleDelete(CallbackQuery callbackQuery) {
         var userId = callbackQuery.from().id();
         try {
-            flightRequestService.removeFlightRequest(CallbackQueryParser.getRequestId(callbackQuery.data()));
+            flightRequestService.removeFlightRequest(CallbackQueryParser.getRequestId(callbackQuery.data()), userId);
             return new SendMessage(userId, "Ваш запрос удален");
         } catch (Exception e) {
             log.error("ERROR: " + e.getMessage());

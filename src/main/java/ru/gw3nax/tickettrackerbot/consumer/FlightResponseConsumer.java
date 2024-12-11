@@ -19,7 +19,7 @@ import ru.gw3nax.tickettrackerbot.service.BotService;
 public class FlightResponseConsumer {
     private final BotService botService;
 
-    @Value("${app.topic-name}")
+    @Value("${kafka-consumer.topic-prop.name}")
     private String topicName;
 
     @RetryableTopic(

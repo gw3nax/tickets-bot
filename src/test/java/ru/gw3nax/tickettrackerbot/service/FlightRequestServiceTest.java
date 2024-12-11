@@ -60,11 +60,11 @@ class FlightRequestServiceTest {
     void testGetAllRequestsByUserId() {
         Long userId = 1L;
         var flightRequestEntity1 = FlightRequestEntity.builder()
-                .user(new User(userId, InputDataState.SOURCE))
+                .user(new User(userId, InputDataState.SOURCE, null))
                 .id(1L)
                 .build();
         var flightRequestEntity2 = FlightRequestEntity.builder()
-                .user(new User(userId, InputDataState.SOURCE))
+                .user(new User(userId, InputDataState.SOURCE, null))
                 .id(2L)
                 .build();
         List<FlightRequestEntity> mockRequests = List.of(flightRequestEntity1, flightRequestEntity2);
@@ -108,7 +108,7 @@ class FlightRequestServiceTest {
         FlightRequest mockFlightRequest = new FlightRequest();
         when(conversionService.convert(mockEntity, FlightRequest.class)).thenReturn(mockFlightRequest);
 
-        flightRequestService.removeFlightRequest(requestId);
+        flightRequestService.removeFlightRequest(requestId, 1L);
 
         verify(flightRequestRepository, times(1)).deleteById(requestId);
         verify(queryProducer, times(1)).sendUpdate(mockFlightRequest);
@@ -121,7 +121,7 @@ class FlightRequestServiceTest {
         when(flightRequestRepository.findById(requestId)).thenReturn(Optional.empty());
 
         RuntimeException exception = assertThrows(RuntimeException.class,
-                () -> flightRequestService.removeFlightRequest(requestId));
+                () -> flightRequestService.removeFlightRequest(requestId, 1L));
 
         assertEquals("No flight request found", exception.getMessage());
         verify(flightRequestRepository, times(1)).findById(requestId);

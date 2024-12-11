@@ -68,7 +68,6 @@ class MessageCallbackQueryHandlerTest {
 
     @Test
     void handle_shouldReturnSendMessageForDeleteRequest() {
-        // Prepare test data
         callbackQuery = mock(CallbackQuery.class);
         User mockUser = mock(User.class);
         when(callbackQuery.data()).thenReturn("12345");
@@ -79,7 +78,7 @@ class MessageCallbackQueryHandlerTest {
 
         assertEquals("Ваш запрос удален", response.getParameters().get("text"));
 
-        verify(flightRequestService).removeFlightRequest(12345L);
+        verify(flightRequestService).removeFlightRequest(12345L, mockUser.id());
     }
 
     @Test
@@ -89,11 +88,8 @@ class MessageCallbackQueryHandlerTest {
         when(callbackQuery.data()).thenReturn("12345");
         when(callbackQuery.from()).thenReturn(mockUser);
         when(mockUser.id()).thenReturn(12345L);
-
-        doThrow(new RuntimeException("Error")).when(flightRequestService).removeFlightRequest(12345L);
-
+        doThrow(new RuntimeException("Error")).when(flightRequestService).removeFlightRequest(12345L, 12345L);
         SendMessage response = (SendMessage) messageCallbackQueryHandler.handle(callbackQuery);
-
         assertEquals("Something went wrong. Please try again later", response.getParameters().get("text"));
     }
 }

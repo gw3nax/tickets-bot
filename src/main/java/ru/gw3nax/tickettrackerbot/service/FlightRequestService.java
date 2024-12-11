@@ -44,19 +44,21 @@ public class FlightRequestService {
     }
 
     public void saveFlightRequest(FlightRequest flightRequest) {
+        log.info("Saving flight request: {}", flightRequest);
         queryProducer.sendUpdate(flightRequest);
         var flightRequestEntity = Objects.requireNonNull(conversionService.convert(flightRequest, FlightRequestEntity.class));
         flightRequestEntity.setUser(userService.getUser(Long.valueOf(flightRequest.getUserId())));
         flightRequestRepository.save(flightRequestEntity);
     }
 
-    public void removeFlightRequest(Long requestId) {
+    public void removeFlightRequest(Long requestId, Long userId) {
         var optionalFlightRequestEntity = flightRequestRepository.findById(requestId);
         if (optionalFlightRequestEntity.isEmpty()) throw new RuntimeException("No flight request found");
         var flightRequestEntity = optionalFlightRequestEntity.get();
         flightRequestRepository.deleteById(requestId);
         var flightRequest = Objects.requireNonNull(conversionService.convert(flightRequestEntity, FlightRequest.class));
         flightRequest.setAction(Action.DELETE);
+        flightRequest.setUserId(userId.toString());
         queryProducer.sendUpdate(flightRequest);
     }
 }

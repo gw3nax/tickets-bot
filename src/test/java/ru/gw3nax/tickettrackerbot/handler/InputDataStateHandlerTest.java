@@ -85,7 +85,7 @@ class InputDataStateHandlerTest {
 
         verify(userService).updateState(userId, InputDataState.DEPARTURE_DATE_FROM);
         assertEquals(userId, response.getParameters().get("chat_id"));
-        assertEquals("Введите дату вылета (yyyy-MM-dd)", response.getParameters().get("text"));
+        assertEquals("Введите начальную дату окна вылета (yyyy-MM-dd)", response.getParameters().get("text"));
     }
     @Test
     void handleState_shouldHandleInvalidDestination() {
@@ -113,7 +113,7 @@ class InputDataStateHandlerTest {
 
         verify(userService).updateState(userId, InputDataState.DEPARTURE_DATE_TO);
         assertEquals(userId, response.getParameters().get("chat_id"));
-        assertEquals("Введите дату возвращения (yyyy-MM-dd)", response.getParameters().get("text"));
+        assertEquals("Введите конечную дату окна вылета (yyyy-MM-dd)", response.getParameters().get("text"));
     }
 
     @Test
@@ -155,31 +155,6 @@ class InputDataStateHandlerTest {
 
         assertEquals(userId, response.getParameters().get("chat_id"));
         assertEquals("Дата должна быть не ранее сегодняшнего дня.\nПопробуйте еще раз!", response.getParameters().get("text"));
-    }
-
-    @Test
-    void testValidCurrency() {
-        var userId = 12345L;
-        var update = createMockUpdate(userId, "USD");
-        when(userService.getState(userId)).thenReturn(InputDataState.CURRENCY);
-
-        SendMessage response = stateHandler.handleState(update);
-        assertEquals("Введите максимальную цену", response.getParameters().get("text"));
-        verify(userService, times(1)).updateState(userId, InputDataState.PRICE);
-    }
-
-    @Test
-    void testInvalidCurrency() {
-        var userId = 12345L;
-        var update = createMockUpdate(userId, "invalid-currency");
-        when(userService.getState(userId)).thenReturn(InputDataState.CURRENCY);
-        String userMessage = "XYZ";
-        when(update.message().text()).thenReturn(userMessage);
-
-        SendMessage response = stateHandler.handleState(update);
-
-        assertEquals("Неверный формат валюты. Попробуйте еще раз", response.getParameters().get("text"));
-        verify(userService, never()).updateState(anyLong(), any());
     }
 
     @Test
