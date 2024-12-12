@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import ru.gw3nax.tickettrackerbot.enums.InputDataState;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -17,11 +16,12 @@ import java.util.List;
 @Table(name = "users")
 public class User {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private Long userId;
     @Nullable
     @Enumerated(value = EnumType.STRING)
     private InputDataState inputDataState;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<FlightRequestEntity> flightRequests = new ArrayList<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<FlightRequestEntity> flightRequests;
 }

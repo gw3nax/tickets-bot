@@ -4,7 +4,7 @@ spring:
   jackson:
     time-zone: UTC
   datasource:
-    url: jdbc:postgresql://localhost:5435/botDb
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5435/botDb}
     username: postgres
     password: password
     driver-class-name: org.postgresql.Driver
@@ -39,7 +39,7 @@ kafka-producer:
   batch-size: 1048576
   max-request-size: 1048576
   linger-ms: 5000
-  bootstrap-server:  host.docker.internal:9092
+  bootstrap-server:  ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
   credential:
     username: admin
     password: admin-secret
@@ -49,7 +49,7 @@ kafka-producer:
     replicas: 1
 
 kafka-consumer:
-  bootstrap-server: host.docker.internal:9092
+  bootstrap-server: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
   enable-auto-commit: false
   fetch-max-byte: 1048576
   max-poll-records: 5

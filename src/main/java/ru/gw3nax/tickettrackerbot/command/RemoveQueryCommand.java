@@ -31,7 +31,7 @@ public class RemoveQueryCommand implements Command {
     public SendMessage handle(Update update) {
         var userId = update.message().from().id();
         var keyboardInfo = flightRequestService.getAllRequestsByUserId(0, 3, userId);
-        if (keyboardInfo == null) {
+        if (keyboardInfo.inlineKeyboardButtonInfoList().isEmpty()) {
             return new SendMessage(userId, "Вы не ищите ни один билет.\nУдалять нечего.");
         }
         return new SendMessage(update.message().chat().id(), "Какой запрос вы хотите удалить? Пожалуйста, укажите его.")

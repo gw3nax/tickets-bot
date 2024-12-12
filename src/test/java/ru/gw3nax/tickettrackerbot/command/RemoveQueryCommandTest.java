@@ -49,7 +49,7 @@ class RemoveQueryCommandTest {
         when(message.from()).thenReturn(user);
         when(user.id()).thenReturn(12345L);
 
-        when(flightRequestService.getAllRequestsByUserId(0, 3, 12345L)).thenReturn(null);
+        when(flightRequestService.getAllRequestsByUserId(0, 3, 12345L)).thenReturn(new InlineKeyboardInfo(0, List.of()));
 
         SendMessage response = removeQueryCommand.handle(update);
 

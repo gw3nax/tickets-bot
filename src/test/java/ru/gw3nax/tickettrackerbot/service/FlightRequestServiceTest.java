@@ -10,6 +10,7 @@ import ru.gw3nax.tickettrackerbot.dto.request.FlightRequest;
 import ru.gw3nax.tickettrackerbot.entity.FlightRequestEntity;
 import ru.gw3nax.tickettrackerbot.entity.User;
 import ru.gw3nax.tickettrackerbot.enums.InputDataState;
+import ru.gw3nax.tickettrackerbot.exceptions.NoFlightRequestFoundException;
 import ru.gw3nax.tickettrackerbot.producer.QueryProducer;
 import ru.gw3nax.tickettrackerbot.repository.FlightRequestRepository;
 
@@ -43,39 +44,42 @@ class FlightRequestServiceTest {
         MockitoAnnotations.openMocks(this);
         flightRequestService = new FlightRequestService(flightRequestRepository, conversionService, queryProducer, userService);
     }
-
     @Test
     void testFindAllRequestsByUserId() {
         Long userId = 1L;
+        User mockUser = new User(null, userId, InputDataState.SOURCE, null);
         List<FlightRequestEntity> mockRequests = List.of(new FlightRequestEntity());
-        when(flightRequestRepository.findByUserId(userId)).thenReturn(mockRequests);
+
+        when(userService.getUser(userId)).thenReturn(mockUser);
+        when(flightRequestRepository.findByUserId(mockUser.getId())).thenReturn(mockRequests);
 
         var result = flightRequestService.findAllRequestsByUserId(userId);
 
         assertEquals(mockRequests, result);
-        verify(flightRequestRepository, times(1)).findByUserId(userId);
+        verify(userService, times(1)).getUser(userId);
+        verify(flightRequestRepository, times(1)).findByUserId(mockUser.getId());
     }
+
 
     @Test
     void testGetAllRequestsByUserId() {
         Long userId = 1L;
-        var flightRequestEntity1 = FlightRequestEntity.builder()
-                .user(new User(userId, InputDataState.SOURCE, null))
-                .id(1L)
-                .build();
-        var flightRequestEntity2 = FlightRequestEntity.builder()
-                .user(new User(userId, InputDataState.SOURCE, null))
-                .id(2L)
-                .build();
+        User mockUser = new User(null, userId, InputDataState.SOURCE, null);
+        var flightRequestEntity1 = FlightRequestEntity.builder().user(mockUser).id(1L).build();
+        var flightRequestEntity2 = FlightRequestEntity.builder().user(mockUser).id(2L).build();
         List<FlightRequestEntity> mockRequests = List.of(flightRequestEntity1, flightRequestEntity2);
-        when(flightRequestRepository.findByUserId(userId)).thenReturn(mockRequests);
+
+        when(userService.getUser(userId)).thenReturn(mockUser);
+        when(flightRequestRepository.findByUserId(mockUser.getId())).thenReturn(mockRequests);
 
         var result = flightRequestService.getAllRequestsByUserId(0, 1, userId);
 
         assertEquals(2, result.totalPageNumber());
         assertEquals(1, result.inlineKeyboardButtonInfoList().size());
-        verify(flightRequestRepository, times(1)).findByUserId(userId);
+        verify(userService, times(1)).getUser(userId);
+        verify(flightRequestRepository, times(1)).findByUserId(mockUser.getId());
     }
+
 
     @Test
     void testSaveFlightRequest() {
@@ -91,8 +95,10 @@ class FlightRequestServiceTest {
                 .build();
 
         FlightRequestEntity mockEntity = new FlightRequestEntity();
+        User mockUser = new User(null, 1L, null, null);
+
         when(conversionService.convert(flightRequest, FlightRequestEntity.class)).thenReturn(mockEntity);
-        when(userService.getUser(1L)).thenReturn(null);
+        when(userService.getUser(1L)).thenReturn(mockUser);
 
         flightRequestService.saveFlightRequest(flightRequest);
 
@@ -123,7 +129,7 @@ class FlightRequestServiceTest {
         RuntimeException exception = assertThrows(RuntimeException.class,
                 () -> flightRequestService.removeFlightRequest(requestId, 1L));
 
-        assertEquals("No flight request found", exception.getMessage());
+        assertEquals("No flight request found for ID 1", exception.getMessage());
         verify(flightRequestRepository, times(1)).findById(requestId);
         verify(flightRequestRepository, never()).deleteById(anyLong());
         verify(queryProducer, never()).sendUpdate(any());

@@ -1,5 +1,6 @@
 CREATE TABLE users
 (
-    id BIGINT NOT NULL PRIMARY KEY,
-    input_data_state VARCHAR(30)
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL UNIQUE,
+    input_data_state TEXT
 );

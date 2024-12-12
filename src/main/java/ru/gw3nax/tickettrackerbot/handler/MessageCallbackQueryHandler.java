@@ -8,6 +8,7 @@ import com.pengrad.telegrambot.response.BaseResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.gw3nax.tickettrackerbot.exceptions.NoFlightRequestFoundException;
 import ru.gw3nax.tickettrackerbot.model.InlineKeyboardInfo;
 import ru.gw3nax.tickettrackerbot.service.FlightRequestService;
 import ru.gw3nax.tickettrackerbot.utils.CallbackQueryParser;
@@ -54,6 +55,8 @@ public class MessageCallbackQueryHandler {
         try {
             flightRequestService.removeFlightRequest(CallbackQueryParser.getRequestId(callbackQuery.data()), userId);
             return new SendMessage(userId, "Ваш запрос удален");
+        } catch (NoFlightRequestFoundException e){
+            return new SendMessage(userId, "В данный момент вы не ищите никакие билеты");
         } catch (Exception e) {
             log.error("ERROR: " + e.getMessage());
             return new SendMessage(userId, "Something went wrong. Please try again later");

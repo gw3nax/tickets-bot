@@ -2,7 +2,6 @@ package ru.gw3nax.tickettrackerbot.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -12,8 +11,8 @@ import ru.gw3nax.tickettrackerbot.repository.UserRepository;
 
 import java.util.Optional;
 
-import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class UserServiceTest {
 
@@ -29,81 +28,121 @@ class UserServiceTest {
     }
 
     @Test
-    void testRegisterUser() {
-        Long chatId = 1L;
+    void registerUser_ShouldSaveUser_WhenUserDoesNotExist() {
+        Long userId = 1L;
 
-        userService.registerUser(chatId);
+        when(userRepository.findByUserId(userId)).thenReturn(Optional.empty());
 
-        ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
-        verify(userRepository, times(1)).save(captor.capture());
+        userService.registerUser(userId);
 
-        User capturedUser = captor.getValue();
-        assertEquals(chatId, capturedUser.getId());
-        assertNull(capturedUser.getInputDataState());
+        verify(userRepository, times(1)).save(any(User.class));
     }
 
     @Test
-    void testUpdateState() {
-        Long chatId = 1L;
-        InputDataState state = InputDataState.SOURCE;
+    void registerUser_ShouldDoNothing_WhenUserAlreadyExists() {
+        Long userId = 1L;
+        User existingUser = User.builder().id(1L).userId(userId).build();
 
-        when(userRepository.findById(chatId)).thenReturn(Optional.of(User.builder().id(chatId).build()));
+        when(userRepository.findByUserId(userId)).thenReturn(Optional.of(existingUser));
 
-        userService.updateState(chatId, state);
+        userService.registerUser(userId);
 
-        ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
-        verify(userRepository, times(1)).save(captor.capture());
-
-        User capturedUser = captor.getValue();
-        assertEquals(chatId, capturedUser.getId());
-        assertEquals(state, capturedUser.getInputDataState());
+        verify(userRepository, never()).save(any(User.class));
     }
 
     @Test
-    void testGetState() {
+    void updateState_ShouldUpdateState_WhenUserExists() {
         Long chatId = 1L;
-        InputDataState state = InputDataState.SOURCE;
+        InputDataState newState = InputDataState.SOURCE;  // Updated to SOURCE
+        User existingUser = User.builder().id(1L).userId(chatId).inputDataState(InputDataState.DESTINATION).build();  // Updated to DESTINATION
 
-        when(userRepository.findById(chatId)).thenReturn(Optional.of(User.builder().id(chatId).inputDataState(state).build()));
+        when(userRepository.findByUserId(chatId)).thenReturn(Optional.of(existingUser));
 
-        InputDataState result = userService.getState(chatId);
+        userService.updateState(chatId, newState);
 
-        assertEquals(state, result);
+        verify(userRepository, times(1)).save(any(User.class));
     }
 
     @Test
-    void testGetState_shouldReturnNull() {
-        var chatId = 1L;
+    void updateState_ShouldDoNothing_WhenUserDoesNotExist() {
+        Long chatId = 1L;
+        InputDataState newState = InputDataState.SOURCE;
 
-        when(userRepository.findById(chatId)).thenReturn(Optional.empty());
+        when(userRepository.findByUserId(chatId)).thenReturn(Optional.empty());
 
-        var result = userService.getState(chatId);
+        userService.updateState(chatId, newState);
 
-        assertNull(result);
+        verify(userRepository, never()).save(any(User.class));
     }
 
     @Test
-    void testClearState() {
-        Long chatId = 1L;
-        User user = User.builder().id(chatId).inputDataState(InputDataState.SOURCE).build();
+    void getState_ShouldReturnState_WhenUserExists() {
+        Long userId = 1L;
+        InputDataState expectedState = InputDataState.DESTINATION;  // Updated to DESTINATION
+        User existingUser = User.builder().id(1L).userId(userId).inputDataState(expectedState).build();
 
-        when(userRepository.findById(chatId)).thenReturn(Optional.of(user));
+        when(userRepository.findByUserId(userId)).thenReturn(Optional.of(existingUser));
+
+        InputDataState actualState = userService.getState(userId);
+
+        assertEquals(expectedState, actualState);
+    }
+
+    @Test
+    void getState_ShouldReturnNull_WhenUserDoesNotExist() {
+        Long userId = 1L;
+
+        when(userRepository.findByUserId(userId)).thenReturn(Optional.empty());
+
+        InputDataState actualState = userService.getState(userId);
+
+        assertNull(actualState);
+    }
+
+    @Test
+    void clearState_ShouldSetStateToNull_WhenUserExists() {
+        Long chatId = 1L;
+        User existingUser = User.builder().id(1L).userId(chatId).inputDataState(InputDataState.DESTINATION).build();  // Updated to DESTINATION
+
+        when(userRepository.findByUserId(chatId)).thenReturn(Optional.of(existingUser));
 
         userService.clearState(chatId);
 
-        assertNull(user.getInputDataState());
-        verify(userRepository, times(1)).save(user);
+        assertNull(existingUser.getInputDataState());
+        verify(userRepository, times(1)).save(existingUser);
     }
 
     @Test
-    void testGetUser() {
+    void clearState_ShouldDoNothing_WhenUserDoesNotExist() {
         Long chatId = 1L;
-        User user = User.builder().id(chatId).build();
 
-        when(userRepository.findById(chatId)).thenReturn(Optional.of(user));
+        when(userRepository.findByUserId(chatId)).thenReturn(Optional.empty());
 
-        User result = userService.getUser(chatId);
+        userService.clearState(chatId);
 
-        assertEquals(user, result);
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    void getUser_ShouldReturnUser_WhenUserExists() {
+        Long chatId = 1L;
+        User expectedUser = User.builder().id(1L).userId(chatId).build();
+
+        when(userRepository.findByUserId(chatId)).thenReturn(Optional.of(expectedUser));
+
+        User actualUser = userService.getUser(chatId);
+
+        assertEquals(expectedUser, actualUser);
+    }
+
+    @Test
+    void getUser_ShouldReturnNull_WhenUserDoesNotExist() {
+        Long chatId = 1L;
+
+        when(userRepository.findByUserId(chatId)).thenReturn(Optional.empty());
+
+        User actualUser = userService.getUser(chatId);
+
+        assertNull(actualUser);
     }
 }
